@@ -1,0 +1,35 @@
+{
+  "name": "rtcmesh-server",
+  "version": "0.0.1",
+  "description": "The rtcmesh server component.",
+  "keywords": [
+    "rtcmesh",
+    "websockets",
+    "service",
+    "realtime",
+    "real-time",
+    "connection",
+    "mesh",
+    "framework"
+  ],
+  "author": "Valerio della Porta <valerio@della-porta.com> (http://valerio.della-porta.com)",
+  "license": "GPL-3.0",
+  "main": "index.js",
+  "dependencies": {
+    "config": "^3.1.0",
+    "got": "^9.6.0",
+    "js-yaml": "^3.13.1",
+    "node-jose": "^1.1.3",
+    "q": "^1.5.1",
+    "uuid": "^3.3.2",
+    "winston": "^3.2.1",
+    "ws": "^6.2.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rtcmesh/rtcmesh-server.git"
+  },
+  "bugs": {
+    "url": "https://github.com/rtcmesh/rtcmesh-server/issues"
+  },
+}
