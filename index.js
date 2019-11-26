@@ -60,8 +60,8 @@ function run_server(controllers, swagger){
     if(logger) logger.info('connection - new connection');
     
     // Initially set the role to Anonymous.  When the client sends the jwt we will set the proper role.
-    ws.userRole = 'Anonymous';
-    ws.userId = null;
+    ws.connection_info = {user : {role : 'Anonymous', id : null}, latency : null};
+    if(logger) logger.debug('connection_info: ' + JSON.stringify(ws.connection_info, null, 3))
     ws.id = uuidv4();
 
     // Set the latency.
@@ -69,7 +69,7 @@ function run_server(controllers, swagger){
     ws.ping(noop);
     
     ws.on('message', function incoming(message) {
-      if(logger) logger.info('connection on message incoming ' + message + ' - user role: ' + ws.userRole + ' - user id: ' + ws.userId);
+      if(logger) logger.info('connection on message incoming ' + message + ' - connection_info: ' + JSON.stringify());
       // The message validation happens at the service level.
       // Here we only need to keep track of the transactions so we can respond correctly and route the message to the service.
       messageObj = JSON.parse(message);
@@ -83,7 +83,7 @@ function run_server(controllers, swagger){
         // Send to the service or process locally.
         if(logger) logger.info('connection - on message - sending message to ' + messageObj.service);
         if(service_connections[messageObj.service]){
-          messageObj.user = {role : ws.userRole, id : ws.userId};
+          messageObj.connection_info = ws.connection_info;
           service_connections[messageObj.service].send(JSON.stringify(messageObj));
         }else{
           if(messageObj.service === '_server_'){
@@ -126,17 +126,17 @@ function run_server(controllers, swagger){
     ws.on('pong', heartbeat);
     function noop() {}
     function heartbeat() {
-      ws.connection_latency = (Math.floor(Date.now()) - ws.connection_ping_tstamp) / 2;
+      ws.connection_info.latency = (Math.floor(Date.now()) - ws.connection_ping_tstamp) / 2;
       ws.isAlive = true;
-      // if(logger) logger.info('latency = ' + ws.connection_latency + ' - role: ' + ws.userRole
-      //   + ' - user: ' + ws.userId + ' - id: ' + ws.id);
+      // if(logger) logger.info('latency = ' + ws.connection_info.latency + ' - role: ' + ws.connection_info.user.role
+      //   + ' - user: ' + ws.connection_info.user.id + ' - id: ' + ws.id);
     }
     const intervalId = setInterval(function ping() {
       // NOTE: the hc_kld-auction_bid-engine service also open a connection to the server 
       //       in order to broadcast messges when event is live.
       wss.clients.forEach(function each(ws) {
         // if (ws.isAlive === false){
-        //   console.log('disconnecting', ws.userRole);
+        //   console.log('disconnecting', ws.connection_info.user.role);
         //   return ws.terminate();
         // }
         ws.isAlive = false;
@@ -148,8 +148,8 @@ function run_server(controllers, swagger){
     // Log the latency every 10 minutes.
     setInterval(function () {
       wss.clients.forEach(function each(ws) {
-        if(logger) logger.info('latency = ' + ws.connection_latency + ' - role: ' + ws.userRole
-          + ' - user: ' + ws.userId + ' - id: ' + ws.id);
+        if(logger && ws.connection_info) logger.info('latency = ' + ws.connection_info.latency + ' - role: ' + ws.connection_info.user.role
+          + ' - user: ' + ws.connection_info.user.id + ' - id: ' + ws.id);
       });
     }, 600000);
   });

@@ -1,6 +1,6 @@
 {
   "name": "rtcmesh-server",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "The rtcmesh server component.",
   "keywords": [
     "rtcmesh",
@@ -31,5 +31,5 @@
   },
   "bugs": {
     "url": "https://github.com/rtcmesh/rtcmesh-server/issues"
-  },
+  }
 }
